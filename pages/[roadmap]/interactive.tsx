@@ -1,5 +1,5 @@
 import { useFetch } from 'use-http';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container } from '@chakra-ui/react';
 import { wireframeJSONToSVG } from 'roadmap-renderer';
 import { GlobalHeader } from '../../components/global-header';
@@ -13,6 +13,7 @@ import { RoadmapError } from '../../components/roadmap/roadmap-error';
 import { RoadmapLoader } from '../../components/roadmap/roadmap-loader';
 import { removeSortingInfo } from '../../lib/renderer';
 import { TeamsBanner } from '../../components/teams-banner';
+import { ShareIcons } from '../../components/share-icons';
 
 type RoadmapProps = {
   roadmap: RoadmapType;
@@ -53,11 +54,6 @@ export function InteractiveRoadmapRenderer(props: RoadmapProps) {
     }
 
     function clickListener(event: MouseEvent) {
-      const viewPortMeta = document.querySelector('meta[name=viewport]');
-      if (viewPortMeta) {
-        viewPortMeta.setAttribute('content', "initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0");
-      }
-
       const targetGroup = (event?.target as HTMLElement)?.closest('g');
       const groupId = targetGroup?.dataset?.groupId;
       if (!targetGroup || !groupId) {
@@ -183,8 +179,12 @@ export function InteractiveRoadmapRenderer(props: RoadmapProps) {
     minHeight = ['830px', '1534px', '1553px', '2093px', '2093px', '2093px'];
   }
 
+  if (roadmap.id === 'computer-science') {
+    minHeight = ['1222px', '1393px', '2288px', '3084px', '3084px', '3084px'];
+  }
+
   return (
-    <Container maxW={'container.lg'} position="relative" minHeight={minHeight}>
+    <Container maxW={'container.lg'} position="relative" minHeight={minHeight} pos='relative'>
       {(isLoading || isRendering) && <RoadmapLoader />}
       <ContentDrawer
         roadmap={roadmap}
@@ -192,6 +192,7 @@ export function InteractiveRoadmapRenderer(props: RoadmapProps) {
         onClose={() => setGroupId('')}
       />
 
+      { (!isLoading && !isRendering) && <ShareIcons url={`https://roadmap.sh/${roadmap.id}`} text={roadmap.description} /> }
       <div ref={roadmapRef} />
     </Container>
   );
